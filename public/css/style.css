@@ -52,7 +52,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-
+    text-decoration: none;
     border-radius: 50px;
     border-width: 0;
 }
@@ -138,11 +138,11 @@ body {
 }
 
 .item .menos {
-    color: #32B72F;
+    color: #CF2B2B;
 }
 
 .item .mais {
-    color: #CF2B2B;
+    color: #32B72F;
 }
 
 
@@ -288,9 +288,10 @@ body {
     color: #FFFFFF;
 }
 
-.confirmar-pedido > button {
+.confirmar-pedido > .cancelar, .confirmar-pedido > .tudo-certo {
     width: 100%;
     height: 52px;
+    text-decoration: none;
 }
 
 .tudo-certo {

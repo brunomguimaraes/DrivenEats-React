@@ -1,7 +1,15 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
+import {
+    BrowserRouter as Router,
+    Switch,
+    Route,
+    Link,
+    Redirect
+} from 'react-router-dom'
 import TopBar from './TopBar'
 import Footer from './Footer'
 import Section from './Section'
+import ConfirmOrder from './ConfirmOrder'
 
 
 const listFood = [
@@ -67,62 +75,75 @@ const listDessert = [
     }
 ]
 
+const listCategory = [
+    {
+        name: 'comida',
+        title: 'Primeiro, seu prato',
+    },
+    {
+        name: 'bebida',
+        title: 'Agora, sua bebida'
+    },
+    {
+        name: 'sobremesa',
+        title: 'Por fim, sua sobremesa'
+    }
+]
+
 export default () => {
 
-    const [ selectedFood, setSelectedFood ] = useState({index: -1, qtd: 0})
-    const [ selectedDrink, setSelectedDrink ] = useState({index: -1, qtd: 0})
-    const [ selectedDessert, setSelectedDessert ] = useState({index: -1, qtd: 0})
+    const [selectedFood, setSelectedFood] = useState({ index: -1, qtd: 0 })
+    const [selectedDrink, setSelectedDrink] = useState({ index: -1, qtd: 0 })
+    const [selectedDessert, setSelectedDessert] = useState({ index: -1, qtd: 0 })
+
+    const [isOrderReady, setIsOrderReady] = useState(false)
+
+    const order = [selectedFood, selectedDrink, selectedDessert]
+    const setOrder = [setSelectedFood, setSelectedDrink, setSelectedDessert]
+
+    const categoryContent = [listFood, listDrink, listDessert]
+
+    useEffect(() => order.filter(i => i.qtd > 0).length < 3 ? setIsOrderReady(false) : setIsOrderReady(true), order)
 
     return (
-        <>
+
+        <Router>
             <TopBar />
 
-            <div class="conteudo-principal">
-                <Section
-                    subSectionName='comida'
-                    subSectionTitle='Primeiro, seu prato'
-                    itemList={listFood}
-                    selectInfo={[selectedFood, setSelectedFood]}
-                />
-                <Section
-                    subSectionName='bebida'
-                    subSectionTitle='Agora, sua bebida'
-                    itemList={listDrink}
-                    selectInfo={[selectedDrink, setSelectedDrink]}
-                />
-                <Section
-                    subSectionName='sobremesa'
-                    subSectionTitle='Por fim, sua sobremesa'
-                    itemList={listDessert}
-                    selectInfo={[selectedDessert, setSelectedDessert]}
-                />
-            </div>
+            <Switch>
+                <Route path='/order'>
+                    <ConfirmOrder
+                        order={order}
+                        foods={listFood}
+                        drinks={listDrink}
+                        desserts={listDessert}
+                    />
+                </Route>
 
-            <Footer />
+                <Route path='/'>
+                    <div class="conteudo-principal">
+                        {
+                            listCategory.map((category, index) => {
+                                return (
+                                    <Section
+                                        subSectionName={category.name}
+                                        subSectionTitle={category.title}
+                                        itemList={categoryContent[index]}
+                                        selectInfo={[order[index], setOrder[index]]}
+                                        key={index}
+                                    />
+                                )
+                            })
+                        }
+                    </div>
 
-            <div class="modal oculto">
-                <div class="confirmar-pedido">
-                    <p>Confirme seu pedido</p>
-                    <span>
-                        <span class="comida-selecionada">Frango Yin Yang</span>
-                        <span class="preco-comida-selecionada">14,90</span>
-                    </span>
-                    <span>
-                        <span class="bebida-selecionada">Coquinha gelada</span>
-                        <span class="preco-bebida-selecionada">4,90</span>
-                    </span>
-                    <span>
-                        <span class="sobremesa-selecionada">Pudim</span>
-                        <span class="preco-sobremesa-selecionada">7,90</span>
-                    </span>
-                    <span class="ultimo-span">
-                        <span>Total</span>
-                        <span class="preco-total">R$ 27,70</span>
-                    </span>
-                    <button class="tudo-certo" onclick="fecharPedido()">Tudo certo, pode pedir!</button>
-                    <button class="cancelar" onclick="voltarParaPaginaSelecao()">Cancelar</button>
-                </div>
-            </div>
-        </>
+                    <Footer isOrderReady={isOrderReady} />
+                </Route>
+            </Switch>
+
+
+
+
+        </Router>
     )
 }
